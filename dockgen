@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+
+def error msg
+	$stderr.puts msg
+	exit -1
+end
+
+error("docgen SIZE DEPTH") if ARGV.length != 2
+
+$size = ARGV[0].to_i
+$dept = ARGV[1].to_i
+$dict = Hash.new
+
+buff = ""
+$stdin.each do |line|
+	line.strip!
+	buff << line << " "
+end
+
+buff.gsub! "\t", " "
+buff = buff.split ' '
+error("Input text was not long enough!") if buff.length < $dept
+
+buff.length.times do
+	if $dict["#{buff[0]}"]
+		$dict["#{buff[0]}"].push buff[1...$dept]
+	else
+		$dict["#{buff[0]}"] = [buff[1...$dept]]
+	end
+	buff.rotate! 1
+end
+
+root = buff[rand(buff.length)]
+print root + " "
+
+$size.times do
+	keys = $dict["#{root}"]
+	key = keys[rand keys.length]
+	print key.join(" ") + " "
+	root = key[-1]
+end
+
+puts
